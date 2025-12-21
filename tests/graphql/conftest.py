@@ -166,3 +166,4 @@ def rickmorty_locations_query():
 
 
 
+
