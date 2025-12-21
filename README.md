@@ -1,6 +1,6 @@
 # API Testing Framework
 
-Python фреймворк для тестирования REST, GraphQL, gRPC API и Kafka.
+API testing framework in Python: REST, GraphQL, gRPC, Kafka, PostgreSQL, pytest, Allure.
 
 ![Python](https://img.shields.io/badge/Python-3.11+-blue)
 ![pytest](https://img.shields.io/badge/pytest-8.0+-green)
