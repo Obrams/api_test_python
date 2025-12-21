@@ -5,6 +5,9 @@ API testing framework in Python: REST, GraphQL, gRPC, Kafka, PostgreSQL, pytest,
 ![Python](https://img.shields.io/badge/Python-3.11+-blue)
 ![pytest](https://img.shields.io/badge/pytest-8.0+-green)
 ![License](https://img.shields.io/badge/license-MIT-blue)
+![CI](https://github.com/Obrams/api_test_python/actions/workflows/ci.yml/badge.svg)
+
+**Topics:** `api-testing` `pytest` `grpc` `kafka` `graphql` `sqlalchemy` `allure`
 
 ## Содержание
 
@@ -289,6 +292,25 @@ pytest -m "not slow"
 # Только негативные тесты
 pytest -m negative
 ```
+
+## CI и отчёты
+
+### GitHub Actions
+
+CI автоматически запускает тесты REST, GraphQL и gRPC при каждом push и pull request.
+
+**Статус CI:** [![CI](https://github.com/Obrams/api_test_python/actions/workflows/ci.yml/badge.svg)](https://github.com/Obrams/api_test_python/actions/workflows/ci.yml)
+
+### Allure отчёты
+
+- **Артефакты:** Allure результаты и отчёты доступны в [Actions artifacts](https://github.com/Obrams/api_test_python/actions) после каждого запуска CI
+- **GitHub Pages:** Статический Allure отчёт публикуется на [GitHub Pages](https://obrams.github.io/api_test_python/) (только для main/master ветки)
+
+Для скачивания артефактов:
+1. Перейти в [Actions](https://github.com/Obrams/api_test_python/actions)
+2. Выбрать нужный workflow run
+3. Скачать артефакты `allure-results-*` или `allure-report-*`
+4. Для просмотра отчёта локально: `allure serve <путь-к-allure-results>`
 
 ## API для тестирования
 
