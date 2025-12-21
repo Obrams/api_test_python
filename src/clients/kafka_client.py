@@ -4,7 +4,7 @@ Kafka клиент с поддержкой sync/async операций для т
 from typing import Any, Callable, Generator
 import json
 import time
-from datetime import datetime
+from datetime import datetime, UTC
 from contextlib import contextmanager
 
 from kafka import KafkaProducer, KafkaConsumer, KafkaAdminClient
@@ -109,6 +109,21 @@ class KafkaClient:
         """Проверить существование топика."""
         return topic in self.list_topics()
     
+    def is_available(self) -> bool:
+        """Проверить доступность Kafka брокеров."""
+        try:
+            admin = KafkaAdminClient(
+                bootstrap_servers=self.bootstrap_servers,
+                client_id=f"{self.client_id}_health_check",
+                request_timeout_ms=5000,
+            )
+            admin.list_topics()
+            admin.close()
+            return True
+        except Exception as e:
+            logger.debug("Kafka brokers not available", error=str(e))
+            return False
+    
     # =====================
     # Producer Operations
     # =====================
@@ -167,7 +182,7 @@ class KafkaClient:
             
             # Обновляем статистику
             self._producer_stats.messages_sent += 1
-            self._producer_stats.last_send_time = datetime.utcnow()
+            self._producer_stats.last_send_time = datetime.now(UTC)
             topics_list: list[str] = self._producer_stats.topics
             if topic not in topics_list:
                 topics_list.append(topic)
@@ -187,7 +202,7 @@ class KafkaClient:
                 topic=topic,
                 partition=-1,
                 offset=-1,
-                timestamp=datetime.utcnow(),
+                timestamp=datetime.now(UTC),
                 success=False,
                 error=str(e),
             )
@@ -259,7 +274,7 @@ class KafkaClient:
         
         self._consumer = consumer
         self._consumer_stats.topics = topics
-        self._consumer_stats.start_time = datetime.utcnow()
+        self._consumer_stats.start_time = datetime.now(UTC)
         
         logger.info("Consumer created", topics=topics, group_id=group_id)
         return consumer
@@ -295,7 +310,7 @@ class KafkaClient:
                 
                 self._consumer_stats.messages_consumed += 1
                 self._consumer_stats.last_offset = msg.offset
-                self._consumer_stats.last_message_time = datetime.utcnow()
+                self._consumer_stats.last_message_time = datetime.now(UTC)
                 
                 return consumed
         finally:
@@ -337,7 +352,7 @@ class KafkaClient:
                 
                 self._consumer_stats.messages_consumed += 1
                 self._consumer_stats.last_offset = msg.offset
-                self._consumer_stats.last_message_time = datetime.utcnow()
+                self._consumer_stats.last_message_time = datetime.now(UTC)
                 
                 if len(messages) >= max_messages:
                     break

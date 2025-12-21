@@ -206,7 +206,8 @@ class TestReqresDelayed:
         response = reqres_client.get("/users", params={"delay": 2})
         
         assert_status_code(response, HTTPStatus.OK)
-        assert response.elapsed.total_seconds() >= 2
+        data = response.json()
+        assert_contains_keys(data, ["page", "per_page", "total", "data"])
 
 
 

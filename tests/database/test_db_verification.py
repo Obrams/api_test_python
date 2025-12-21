@@ -101,6 +101,8 @@ class TestUserDatabaseVerification:
         2. Сохраняем в БД
         3. Проверяем количество через assert_row_count
         """
+        db_client.truncate_table("users")
+        
         # 1. Получаем пользователей из API
         response = rest_client.get("/users")
         assert response.status_code == HTTPStatus.OK
@@ -221,16 +223,22 @@ class TestRawSQLQueries:
     def test_count_query(
         self,
         db_client: DatabaseClient,
-        db_with_user: dict,
+        rest_client: RestClient,
+        random_user,
     ):
         """
         Подсчёт записей через SQL.
         """
-        count = db_client.count("users")
+        db_client.truncate_table("users")
+        
+        response = rest_client.post("/users", json=random_user.model_dump())
+        api_user = response.json()
+        db_client.save_user(api_user)
+        
+        count = db_client.count("users", {"external_id": api_user["id"]})
         assert count == 1
         
-        # С условием
-        count_by_email = db_client.count("users", {"email": db_with_user["email"]})
+        count_by_email = db_client.count("users", {"email": api_user["email"]})
         assert count_by_email == 1
 
 
@@ -306,6 +314,7 @@ class TestNegativeCases:
                 "users",
                 {"email": "nonexistent@example.com"}
             )
+
 
 
 

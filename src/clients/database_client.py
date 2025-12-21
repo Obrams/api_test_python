@@ -1,13 +1,17 @@
 """Database client for PostgreSQL operations."""
 from typing import Any, Optional
 from contextlib import contextmanager
+import logging
 
 from sqlalchemy import create_engine, text, select, func, Table
 from sqlalchemy.orm import sessionmaker, Session
 from sqlalchemy.engine import Engine
+from sqlalchemy.exc import IntegrityError, OperationalError
 
 from src.database.base import Base
 from src.database.models import UserDB, PostDB, CommentDB, APILogDB
+
+logger = logging.getLogger(__name__)
 
 
 class DatabaseClient:
@@ -87,7 +91,31 @@ class DatabaseClient:
     
     def create_tables(self) -> None:
         """Создать все таблицы в БД."""
-        Base.metadata.create_all(self._engine)
+        try:
+            Base.metadata.create_all(self._engine, checkfirst=True)
+        except (IntegrityError, OperationalError) as e:
+            error_str = str(e.orig) if hasattr(e, 'orig') else str(e)
+            error_code = None
+            if hasattr(e, 'orig') and hasattr(e.orig, 'pgcode'):
+                error_code = e.orig.pgcode
+            
+            is_duplicate = (
+                error_code == "23505" or
+                "duplicate key" in error_str.lower() or
+                "already exists" in error_str.lower() or
+                "pg_class_relname_nsp_index" in error_str
+            )
+            
+            if is_duplicate:
+                logger.debug(f"Tables/sequences already exist, skipping creation: {error_str}")
+                return
+            raise
+        except Exception as e:
+            error_str = str(e)
+            if "duplicate key" in error_str.lower() or "already exists" in error_str.lower():
+                logger.debug(f"Tables/sequences already exist, skipping creation: {error_str}")
+                return
+            raise
     
     def drop_tables(self) -> None:
         """Удалить все таблицы из БД."""
@@ -207,27 +235,44 @@ class DatabaseClient:
     
     def save_user(self, data: dict[str, Any]) -> UserDB:
         """
-        Сохранить пользователя в БД.
+        Сохранить пользователя в БД (upsert по external_id).
         
         Args:
             data: Данные пользователя (из API response)
             
         Returns:
-            Созданный объект UserDB
+            Созданный или обновлённый объект UserDB
         """
         with self.session() as session:
-            user = UserDB(
-                external_id=data.get("id"),
-                name=data.get("name", ""),
-                email=data.get("email", ""),
-                username=data.get("username"),
-                phone=data.get("phone"),
-                website=data.get("website"),
-            )
-            session.add(user)
-            session.flush()
-            session.refresh(user)
-            return user
+            external_id = data.get("id")
+            existing_user = None
+            if external_id is not None:
+                existing_user = session.query(UserDB).filter(
+                    UserDB.external_id == external_id
+                ).first()
+            
+            if existing_user:
+                existing_user.name = data.get("name", existing_user.name)
+                existing_user.email = data.get("email", existing_user.email)
+                existing_user.username = data.get("username", existing_user.username)
+                existing_user.phone = data.get("phone", existing_user.phone)
+                existing_user.website = data.get("website", existing_user.website)
+                session.flush()
+                session.refresh(existing_user)
+                return existing_user
+            else:
+                user = UserDB(
+                    external_id=external_id,
+                    name=data.get("name", ""),
+                    email=data.get("email", ""),
+                    username=data.get("username"),
+                    phone=data.get("phone"),
+                    website=data.get("website"),
+                )
+                session.add(user)
+                session.flush()
+                session.refresh(user)
+                return user
     
     def get_user(self, user_id: int) -> Optional[UserDB]:
         """Получить пользователя по ID."""
@@ -247,25 +292,40 @@ class DatabaseClient:
     
     def save_post(self, data: dict[str, Any]) -> PostDB:
         """
-        Сохранить пост в БД.
+        Сохранить пост в БД (upsert по external_id).
         
         Args:
             data: Данные поста (из API response)
             
         Returns:
-            Созданный объект PostDB
+            Созданный или обновлённый объект PostDB
         """
         with self.session() as session:
-            post = PostDB(
-                external_id=data.get("id"),
-                user_id=data.get("userId"),
-                title=data.get("title", ""),
-                body=data.get("body", ""),
-            )
-            session.add(post)
-            session.flush()
-            session.refresh(post)
-            return post
+            external_id = data.get("id")
+            existing_post = None
+            if external_id is not None:
+                existing_post = session.query(PostDB).filter(
+                    PostDB.external_id == external_id
+                ).first()
+            
+            if existing_post:
+                existing_post.user_id = data.get("userId", existing_post.user_id)
+                existing_post.title = data.get("title", existing_post.title)
+                existing_post.body = data.get("body", existing_post.body)
+                session.flush()
+                session.refresh(existing_post)
+                return existing_post
+            else:
+                post = PostDB(
+                    external_id=external_id,
+                    user_id=data.get("userId"),
+                    title=data.get("title", ""),
+                    body=data.get("body", ""),
+                )
+                session.add(post)
+                session.flush()
+                session.refresh(post)
+                return post
     
     def get_post(self, post_id: int) -> Optional[PostDB]:
         """Получить пост по ID."""

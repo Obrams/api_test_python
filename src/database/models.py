@@ -1,5 +1,5 @@
 """SQLAlchemy models for database tables."""
-from datetime import datetime
+from datetime import datetime, UTC
 from typing import Optional
 
 from sqlalchemy import String, Text, Integer, DateTime, JSON, ForeignKey
@@ -19,8 +19,8 @@ class UserDB(Base):
     username: Mapped[Optional[str]] = mapped_column(String(50), nullable=True)
     phone: Mapped[Optional[str]] = mapped_column(String(50), nullable=True)
     website: Mapped[Optional[str]] = mapped_column(String(100), nullable=True)
-    created_at: Mapped[datetime] = mapped_column(DateTime, default=datetime.utcnow)
-    updated_at: Mapped[Optional[datetime]] = mapped_column(DateTime, onupdate=datetime.utcnow)
+    created_at: Mapped[datetime] = mapped_column(DateTime, default=lambda: datetime.now(UTC))
+    updated_at: Mapped[Optional[datetime]] = mapped_column(DateTime, onupdate=lambda: datetime.now(UTC))
     
     # Relationships
     posts: Mapped[list["PostDB"]] = relationship(back_populates="user", cascade="all, delete-orphan")
@@ -39,8 +39,8 @@ class PostDB(Base):
     user_id: Mapped[Optional[int]] = mapped_column(Integer, ForeignKey("users.id"), nullable=True)
     title: Mapped[str] = mapped_column(String(255), nullable=False)
     body: Mapped[str] = mapped_column(Text, nullable=False)
-    created_at: Mapped[datetime] = mapped_column(DateTime, default=datetime.utcnow)
-    updated_at: Mapped[Optional[datetime]] = mapped_column(DateTime, onupdate=datetime.utcnow)
+    created_at: Mapped[datetime] = mapped_column(DateTime, default=lambda: datetime.now(UTC))
+    updated_at: Mapped[Optional[datetime]] = mapped_column(DateTime, onupdate=lambda: datetime.now(UTC))
     
     # Relationships
     user: Mapped[Optional["UserDB"]] = relationship(back_populates="posts")
@@ -61,7 +61,7 @@ class CommentDB(Base):
     name: Mapped[str] = mapped_column(String(255), nullable=False)
     email: Mapped[str] = mapped_column(String(100), nullable=False)
     body: Mapped[str] = mapped_column(Text, nullable=False)
-    created_at: Mapped[datetime] = mapped_column(DateTime, default=datetime.utcnow)
+    created_at: Mapped[datetime] = mapped_column(DateTime, default=lambda: datetime.now(UTC))
     
     # Relationships
     post: Mapped[Optional["PostDB"]] = relationship(back_populates="comments")
@@ -85,10 +85,11 @@ class APILogDB(Base):
     response_body: Mapped[Optional[dict]] = mapped_column(JSON, nullable=True)
     duration_ms: Mapped[Optional[float]] = mapped_column(nullable=True)
     test_name: Mapped[Optional[str]] = mapped_column(String(255), nullable=True)
-    created_at: Mapped[datetime] = mapped_column(DateTime, default=datetime.utcnow)
+    created_at: Mapped[datetime] = mapped_column(DateTime, default=lambda: datetime.now(UTC))
     
     def __repr__(self) -> str:
         return f"<APILogDB(id={self.id}, {self.method} {self.url} -> {self.status_code})>"
+
 
 
 

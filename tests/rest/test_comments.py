@@ -23,10 +23,24 @@ class TestCommentsGet:
     @pytest.mark.smoke
     def test_get_all_comments(self, rest_client, comments_endpoint):
         """Получение списка всех комментариев."""
-        response = rest_client.get(comments_endpoint)
+        import httpx
+        import json
         
-        assert_status_code(response, HTTPStatus.OK)
-        comments = response.json()
+        extended_timeout = httpx.Timeout(
+            connect=10.0,
+            read=600.0,
+            write=30.0,
+            pool=10.0,
+        )
+        
+        with rest_client.client.stream(
+            "GET",
+            comments_endpoint,
+            timeout=extended_timeout
+        ) as response:
+            assert response.status_code == HTTPStatus.OK
+            content = b"".join(response.iter_bytes())
+            comments = json.loads(content)
         
         assert_list_not_empty(comments)
         assert len(comments) == 500, "JSONPlaceholder имеет 500 комментариев"

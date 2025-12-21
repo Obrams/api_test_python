@@ -20,9 +20,11 @@ from src.models.kafka import (
 )
 
 
+pytestmark = pytest.mark.kafka
+
+
 @allure.epic("Kafka")
 @allure.feature("Integration")
-@pytest.mark.kafka
 class TestKafkaIntegration:
     """Интеграционные тесты Kafka."""
     
@@ -206,6 +208,7 @@ class TestKafkaIntegration:
         )
         
         assert received.value_as_dict()["transaction_id"] == expected_data["transaction_id"]
+
 
 
 

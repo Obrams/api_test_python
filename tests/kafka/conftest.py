@@ -42,6 +42,36 @@ def kafka_helper(kafka_client: KafkaClient) -> KafkaTestHelper:
     return KafkaTestHelper(kafka_client)
 
 
+@pytest.fixture(scope="session")
+def kafka_available(kafka_client: KafkaClient) -> bool:
+    """Проверка доступности Kafka брокеров."""
+    return kafka_client.is_available()
+
+
+def pytest_collection_modifyitems(config, items):
+    """Пропустить Kafka тесты, если брокеры недоступны."""
+    try:
+        from config.settings import settings
+        client = KafkaClient(
+            bootstrap_servers=settings.kafka_bootstrap_servers,
+            client_id="pytest_availability_check",
+            timeout_ms=5000,
+        )
+        is_available = client.is_available()
+        client.close()
+        
+        if not is_available:
+            skip_kafka = pytest.mark.skip(reason="Kafka brokers not available. Start with: docker-compose up -d")
+            for item in items:
+                if "kafka" in str(item.fspath) or item.get_closest_marker("kafka"):
+                    item.add_marker(skip_kafka)
+    except Exception:
+        skip_kafka = pytest.mark.skip(reason="Kafka brokers not available. Start with: docker-compose up -d")
+        for item in items:
+            if "kafka" in str(item.fspath) or item.get_closest_marker("kafka"):
+                item.add_marker(skip_kafka)
+
+
 @pytest.fixture
 def unique_topic() -> str:
     """Генерирует уникальное имя топика для теста."""
@@ -220,6 +250,7 @@ def batch_messages() -> list[dict]:
 def data_generator() -> DataGenerator:
     """Генератор тестовых данных."""
     return DataGenerator()
+
 
 
 

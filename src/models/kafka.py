@@ -2,7 +2,7 @@
 Pydantic модели для Kafka сообщений.
 """
 from typing import Any
-from datetime import datetime
+from datetime import datetime, UTC
 from enum import Enum
 from pydantic import BaseModel, Field
 import uuid
@@ -28,7 +28,7 @@ class MessageType(str, Enum):
 class KafkaMessageBase(BaseModel):
     """Базовая модель Kafka сообщения."""
     message_id: str = Field(default_factory=lambda: str(uuid.uuid4()))
-    timestamp: datetime = Field(default_factory=datetime.utcnow)
+    timestamp: datetime = Field(default_factory=lambda: datetime.now(UTC))
     message_type: MessageType = Field(default=MessageType.EVENT)
     priority: MessagePriority = Field(default=MessagePriority.NORMAL)
 
