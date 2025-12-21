@@ -68,7 +68,7 @@ class Settings(BaseSettings):
     
     # Database
     database_url: str = Field(
-        default="postgresql://tester:testpass@localhost:5432/api_tests",
+        default="postgresql://tester:testpass@localhost:5433/api_tests",
         description="PostgreSQL connection URL"
     )
     database_echo: bool = Field(
