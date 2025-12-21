@@ -8,6 +8,15 @@ license = {text = "MIT"}
 authors = [
     {name = "API Tester", email = "tester@example.com"}
 ]
+keywords = [
+    "api-testing",
+    "pytest",
+    "grpc",
+    "kafka",
+    "graphql",
+    "sqlalchemy",
+    "allure",
+]
 dependencies = [
     # HTTP клиенты
     "httpx>=0.27.0",
