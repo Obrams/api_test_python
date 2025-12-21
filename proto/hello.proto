@@ -1,0 +1,45 @@
+// Hello Service - пример gRPC сервиса для тестирования
+syntax = "proto3";
+
+package hello;
+
+option go_package = "hello/";
+
+// Сервис приветствий
+service HelloService {
+    // Простой unary вызов
+    rpc SayHello (HelloRequest) returns (HelloResponse);
+    
+    // Server streaming - сервер отправляет несколько ответов
+    rpc SayHelloServerStream (HelloRequest) returns (stream HelloResponse);
+    
+    // Client streaming - клиент отправляет несколько запросов
+    rpc SayHelloClientStream (stream HelloRequest) returns (HelloSummary);
+    
+    // Bidirectional streaming
+    rpc SayHelloBidiStream (stream HelloRequest) returns (stream HelloResponse);
+}
+
+// Запрос приветствия
+message HelloRequest {
+    string name = 1;
+    string language = 2;  // опционально: язык приветствия
+}
+
+// Ответ приветствия
+message HelloResponse {
+    string message = 1;
+    string timestamp = 2;
+}
+
+// Сводка для client streaming
+message HelloSummary {
+    int32 total_greetings = 1;
+    repeated string names = 2;
+}
+
+
+
+
+
+

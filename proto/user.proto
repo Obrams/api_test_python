@@ -1,0 +1,102 @@
+// User Service - пример CRUD gRPC сервиса
+syntax = "proto3";
+
+package user;
+
+option go_package = "user/";
+
+import "google/protobuf/empty.proto";
+import "google/protobuf/timestamp.proto";
+
+// Сервис управления пользователями
+service UserService {
+    // CRUD операции
+    rpc CreateUser (CreateUserRequest) returns (User);
+    rpc GetUser (GetUserRequest) returns (User);
+    rpc UpdateUser (UpdateUserRequest) returns (User);
+    rpc DeleteUser (DeleteUserRequest) returns (google.protobuf.Empty);
+    
+    // Списки
+    rpc ListUsers (ListUsersRequest) returns (ListUsersResponse);
+    rpc ListUsersStream (ListUsersRequest) returns (stream User);
+    
+    // Поиск
+    rpc SearchUsers (SearchUsersRequest) returns (stream User);
+}
+
+// Модель пользователя
+message User {
+    int64 id = 1;
+    string name = 2;
+    string email = 3;
+    string username = 4;
+    string phone = 5;
+    Address address = 6;
+    google.protobuf.Timestamp created_at = 7;
+    google.protobuf.Timestamp updated_at = 8;
+}
+
+// Адрес
+message Address {
+    string street = 1;
+    string city = 2;
+    string country = 3;
+    string zip_code = 4;
+}
+
+// Запрос на создание пользователя
+message CreateUserRequest {
+    string name = 1;
+    string email = 2;
+    string username = 3;
+    string phone = 4;
+    Address address = 5;
+}
+
+// Запрос на получение пользователя
+message GetUserRequest {
+    int64 id = 1;
+}
+
+// Запрос на обновление пользователя
+message UpdateUserRequest {
+    int64 id = 1;
+    optional string name = 2;
+    optional string email = 3;
+    optional string phone = 4;
+    optional Address address = 5;
+}
+
+// Запрос на удаление пользователя
+message DeleteUserRequest {
+    int64 id = 1;
+}
+
+// Запрос списка пользователей
+message ListUsersRequest {
+    int32 page = 1;
+    int32 per_page = 2;
+    string sort_by = 3;
+    bool ascending = 4;
+}
+
+// Ответ списка пользователей
+message ListUsersResponse {
+    repeated User users = 1;
+    int32 total = 2;
+    int32 page = 3;
+    int32 per_page = 4;
+}
+
+// Запрос поиска
+message SearchUsersRequest {
+    string query = 1;
+    repeated string fields = 2;  // поля для поиска
+    int32 limit = 3;
+}
+
+
+
+
+
+

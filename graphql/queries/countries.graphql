@@ -1,0 +1,113 @@
+# GraphQL запросы для Countries API
+# https://countries.trevorblades.com/graphql
+
+# Получить все страны
+query GetAllCountries {
+    countries {
+        code
+        name
+        native
+        capital
+        emoji
+        currency
+        languages {
+            code
+            name
+        }
+    }
+}
+
+# Получить страну по коду
+query GetCountryByCode($code: ID!) {
+    country(code: $code) {
+        code
+        name
+        native
+        capital
+        emoji
+        currency
+        phone
+        continent {
+            code
+            name
+        }
+        languages {
+            code
+            name
+            native
+        }
+        states {
+            code
+            name
+        }
+    }
+}
+
+# Получить все континенты
+query GetContinents {
+    continents {
+        code
+        name
+        countries {
+            code
+            name
+        }
+    }
+}
+
+# Получить континент по коду
+query GetContinentByCode($code: ID!) {
+    continent(code: $code) {
+        code
+        name
+        countries {
+            code
+            name
+            capital
+        }
+    }
+}
+
+# Получить все языки
+query GetLanguages {
+    languages {
+        code
+        name
+        native
+        rtl
+    }
+}
+
+# Получить язык по коду
+query GetLanguageByCode($code: ID!) {
+    language(code: $code) {
+        code
+        name
+        native
+        rtl
+    }
+}
+
+# Фильтрация стран по континенту
+query GetCountriesByContinent($continentCode: String!) {
+    countries(filter: { continent: { eq: $continentCode } }) {
+        code
+        name
+        capital
+    }
+}
+
+# Фильтрация стран по валюте
+query GetCountriesByCurrency($currency: String!) {
+    countries(filter: { currency: { eq: $currency } }) {
+        code
+        name
+        currency
+    }
+}
+
+
+
+
+
+

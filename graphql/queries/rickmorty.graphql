@@ -1,0 +1,198 @@
+# GraphQL запросы для Rick and Morty API
+# https://rickandmortyapi.com/graphql
+
+# Получить персонажей с пагинацией
+query GetCharacters($page: Int, $filter: FilterCharacter) {
+    characters(page: $page, filter: $filter) {
+        info {
+            count
+            pages
+            next
+            prev
+        }
+        results {
+            id
+            name
+            status
+            species
+            type
+            gender
+            origin {
+                id
+                name
+                type
+                dimension
+            }
+            location {
+                id
+                name
+                type
+                dimension
+            }
+            image
+            episode {
+                id
+                name
+                episode
+            }
+            created
+        }
+    }
+}
+
+# Получить одного персонажа
+query GetCharacter($id: ID!) {
+    character(id: $id) {
+        id
+        name
+        status
+        species
+        type
+        gender
+        origin {
+            id
+            name
+        }
+        location {
+            id
+            name
+        }
+        image
+        episode {
+            id
+            name
+            air_date
+            episode
+        }
+        created
+    }
+}
+
+# Получить несколько персонажей по ID
+query GetCharactersByIds($ids: [ID!]!) {
+    charactersByIds(ids: $ids) {
+        id
+        name
+        status
+        species
+    }
+}
+
+# Получить эпизоды с пагинацией
+query GetEpisodes($page: Int, $filter: FilterEpisode) {
+    episodes(page: $page, filter: $filter) {
+        info {
+            count
+            pages
+            next
+            prev
+        }
+        results {
+            id
+            name
+            air_date
+            episode
+            characters {
+                id
+                name
+            }
+            created
+        }
+    }
+}
+
+# Получить один эпизод
+query GetEpisode($id: ID!) {
+    episode(id: $id) {
+        id
+        name
+        air_date
+        episode
+        characters {
+            id
+            name
+            status
+        }
+        created
+    }
+}
+
+# Получить локации с пагинацией
+query GetLocations($page: Int, $filter: FilterLocation) {
+    locations(page: $page, filter: $filter) {
+        info {
+            count
+            pages
+            next
+            prev
+        }
+        results {
+            id
+            name
+            type
+            dimension
+            residents {
+                id
+                name
+            }
+            created
+        }
+    }
+}
+
+# Получить одну локацию
+query GetLocation($id: ID!) {
+    location(id: $id) {
+        id
+        name
+        type
+        dimension
+        residents {
+            id
+            name
+            status
+            species
+        }
+        created
+    }
+}
+
+# Фильтр персонажей по статусу
+query GetCharactersByStatus($status: String!) {
+    characters(filter: { status: $status }) {
+        results {
+            id
+            name
+            status
+        }
+    }
+}
+
+# Фильтр персонажей по виду
+query GetCharactersBySpecies($species: String!) {
+    characters(filter: { species: $species }) {
+        results {
+            id
+            name
+            species
+        }
+    }
+}
+
+# Поиск персонажей по имени
+query SearchCharacters($name: String!) {
+    characters(filter: { name: $name }) {
+        results {
+            id
+            name
+            status
+            species
+        }
+    }
+}
+
+
+
+
+
+
