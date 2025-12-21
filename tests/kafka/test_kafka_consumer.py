@@ -12,9 +12,11 @@ from src.clients.kafka_client import KafkaClient, KafkaTestHelper
 from src.models.kafka import ConsumedMessage
 
 
+pytestmark = pytest.mark.kafka
+
+
 @allure.epic("Kafka")
 @allure.feature("Consumer")
-@pytest.mark.kafka
 class TestKafkaConsumer:
     """Тесты Kafka Consumer."""
     
@@ -189,6 +191,7 @@ class TestKafkaConsumer:
         
         assert len(messages) == 1
         assert messages[0].topic == test_topic
+
 
 
 

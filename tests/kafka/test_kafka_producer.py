@@ -17,9 +17,11 @@ from src.models.kafka import (
 )
 
 
+pytestmark = pytest.mark.kafka
+
+
 @allure.epic("Kafka")
 @allure.feature("Producer")
-@pytest.mark.kafka
 class TestKafkaProducer:
     """Тесты Kafka Producer."""
     
@@ -143,6 +145,7 @@ class TestKafkaProducer:
         assert stats.messages_sent >= initial_count + 3
         assert test_topic in stats.topics
         assert stats.last_send_time is not None
+
 
 
 

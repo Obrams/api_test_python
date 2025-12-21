@@ -141,3 +141,7 @@ cython_debug/
 *.pb.go
 *.pb.py
 
+# Allure reports
+reports/allure-results/
+reports/allure-report/
+
