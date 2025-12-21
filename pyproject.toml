@@ -1,12 +1,21 @@
 [project]
 name = "api-test-python"
-version = "1.0.0"
+version = "0.1.0"
 description = "API testing framework in Python: REST, GraphQL, gRPC, Kafka, PostgreSQL, pytest, Allure"
 readme = "README.md"
 requires-python = ">=3.11"
 license = {text = "MIT"}
 authors = [
     {name = "API Tester", email = "tester@example.com"}
+]
+keywords = [
+    "api-testing",
+    "pytest",
+    "grpc",
+    "kafka",
+    "graphql",
+    "sqlalchemy",
+    "allure",
 ]
 dependencies = [
     # HTTP клиенты

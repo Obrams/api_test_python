@@ -574,6 +574,16 @@ def test_pydantic_message(kafka_client, test_topic, user_event_message):
 - **allure** — отчётность
 - **structlog** — структурированное логирование
 
+## Case study
+
+### Проблемы
+
+Какие типичные проблемы решает проект: разрозненные API‑тесты без единого клиента, отсутствие DB‑верификации, нет стабильного Kafka/gRPC тестирования, нет единого отчёта.
+
+### Решения
+
+Какие решения: единые клиенты для всех протоколов, Pydantic модели, SQLAlchemy + SQL assertions, Kafka helper, CI + Allure.
+
 ## Лицензия
 
 MIT License
