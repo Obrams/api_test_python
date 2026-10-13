@@ -9,94 +9,94 @@ API testing framework in Python: REST, GraphQL, gRPC, Kafka, PostgreSQL, pytest,
 
 **Topics:** `api-testing` `pytest` `grpc` `kafka` `graphql` `sqlalchemy` `allure`
 
-## Содержание
+## Contents
 
-- [Особенности](#особенности)
-- [Структура проекта](#структура-проекта)
-- [Установка](#установка)
+- [Features](#features)
+- [Project structure](#project-structure)
+- [Installation](#installation)
 - [PostgreSQL](#postgresql)
-- [Запуск тестов](#запуск-тестов)
-- [API для тестирования](#api-для-тестирования)
-- [Архитектура](#архитектура)
-- [Примеры тестов](#примеры-тестов)
+- [Running tests](#running-tests)
+- [APIs under test](#apis-under-test)
+- [Architecture](#architecture)
+- [Test examples](#test-examples)
 
-## Особенности
+## Features
 
-- REST API тестирование (httpx, sync/async)
-- GraphQL тестирование (queries, mutations, subscriptions)
-- gRPC тестирование (unary, streaming, bidirectional)
-- Kafka тестирование (producer, consumer, integration)
+- REST API testing (httpx, sync/async)
+- GraphQL testing (queries, mutations, subscriptions)
+- gRPC testing (unary, streaming, bidirectional)
+- Kafka testing (producer, consumer, integration)
 - Database verification (PostgreSQL + SQLAlchemy)
-- 130+ тестов (CRUD, auth, messaging, negative cases)
-- Pydantic модели для валидации
-- Faker для генерации данных
-- Allure отчёты
-- Retry механизм
-- Параллельный запуск (pytest-xdist)
+- 130+ tests (CRUD, auth, messaging, negative cases)
+- Pydantic models for validation
+- Faker for test data generation
+- Allure reports
+- Retry mechanism
+- Parallel runs (pytest-xdist)
 
-## Структура проекта
+## Project structure
 
 ```
 api_test_python/
-├── pyproject.toml          # Конфигурация проекта и зависимости
-├── pytest.ini              # Настройки pytest
-├── docker-compose.yml      # PostgreSQL для тестов
+├── pyproject.toml          # Project configuration and dependencies
+├── pytest.ini              # pytest settings
+├── docker-compose.yml      # PostgreSQL for tests
 ├── README.md
 │
-├── config/                 # Конфигурация
+├── config/                 # Configuration
 │   ├── __init__.py
 │   └── settings.py         # Pydantic Settings
 │
-├── src/                    # Исходный код
-│   ├── clients/            # API клиенты
+├── src/                    # Source code
+│   ├── clients/            # API clients
 │   │   ├── rest_client.py
 │   │   ├── graphql_client.py
 │   │   ├── grpc_client.py
-│   │   ├── database_client.py  # PostgreSQL клиент
+│   │   ├── database_client.py  # PostgreSQL client
 │   │   └── kafka_client.py     # Kafka Producer/Consumer
 │   │
-│   ├── database/           # SQLAlchemy модели
+│   ├── database/           # SQLAlchemy models
 │   │   ├── base.py
 │   │   └── models.py       # UserDB, PostDB, CommentDB, APILogDB
 │   │
-│   ├── models/             # Pydantic модели
+│   ├── models/             # Pydantic models
 │   │   ├── user.py
 │   │   ├── post.py
 │   │   ├── comment.py
 │   │   ├── auth.py
-│   │   └── kafka.py        # Kafka сообщения
+│   │   └── kafka.py        # Kafka messages
 │   │
-│   └── utils/              # Утилиты
-│       ├── assertions.py   # Кастомные assertions
+│   └── utils/              # Utilities
+│       ├── assertions.py   # Custom assertions
 │       ├── db_assertions.py # SQL assertions
 │       ├── data_generator.py
 │       └── logger.py
 │
-├── tests/                  # Тесты
-│   ├── conftest.py         # Общие фикстуры
+├── tests/                  # Tests
+│   ├── conftest.py         # Shared fixtures
 │   │
-│   ├── rest/               # REST тесты (~40)
+│   ├── rest/               # REST tests (~40)
 │   │   ├── test_users_crud.py
 │   │   ├── test_posts_crud.py
 │   │   ├── test_comments.py
 │   │   ├── test_auth.py
 │   │   └── test_reqres_users.py
 │   │
-│   ├── graphql/            # GraphQL тесты (~30)
+│   ├── graphql/            # GraphQL tests (~30)
 │   │   ├── test_countries.py
 │   │   ├── test_rickmorty.py
 │   │   └── test_graphql_errors.py
 │   │
-│   ├── grpc/               # gRPC тесты (~30)
+│   ├── grpc/               # gRPC tests (~30)
 │   │   ├── test_grpc_basic.py
 │   │   ├── test_grpc_status_codes.py
 │   │   └── test_grpc_streaming.py
 │   │
-│   ├── database/           # Database verification тесты
+│   ├── database/           # Database verification tests
 │   │   ├── conftest.py
 │   │   └── test_db_verification.py
 │   │
-│   └── kafka/              # Kafka тесты (~20)
+│   └── kafka/              # Kafka tests (~20)
 │       ├── conftest.py
 │       ├── test_kafka_producer.py
 │       ├── test_kafka_consumer.py
@@ -106,36 +106,36 @@ api_test_python/
 │   ├── hello.proto
 │   └── user.proto
 │
-└── graphql/                # GraphQL схемы
+└── graphql/                # GraphQL schemas
     └── queries/
         ├── countries.graphql
         └── rickmorty.graphql
 ```
 
-## Установка
+## Installation
 
-### Требования
+### Requirements
 
 - Python 3.11+
-- pip или poetry
+- pip or poetry
 
-### Установка зависимостей
+### Install dependencies
 
 ```bash
-# Клонировать репозиторий
+# Clone the repository
 cd api_test_python
 
-# Создать виртуальное окружение
+# Create a virtual environment
 python -m venv venv
 source venv/bin/activate  # Linux/Mac
-# или
+# or
 .\venv\Scripts\activate  # Windows
 
-# Установить зависимости
+# Install dependencies
 pip install -e ".[dev]"
 ```
 
-### Альтернатива с poetry
+### Alternative: poetry
 
 ```bash
 poetry install
@@ -144,31 +144,31 @@ poetry shell
 
 ## PostgreSQL
 
-Для запуска Database тестов необходим PostgreSQL.
+Database tests require PostgreSQL.
 
-### Запуск через Docker
+### Run via Docker
 
 ```bash
-# Запустить PostgreSQL и Kafka
+# Start PostgreSQL and Kafka
 docker-compose up -d
 
-# Проверить статус
+# Check status
 docker-compose ps
 
-# Остановить
+# Stop
 docker-compose down
 ```
 
-### Настройки подключения
+### Connection settings
 
-По умолчанию используется:
+Defaults:
 - Host: `localhost`
 - Port: `5432`
 - Database: `api_tests`
 - User: `tester`
 - Password: `testpass`
 
-Можно переопределить через `.env`:
+Can be overridden via `.env`:
 
 ```env
 DATABASE_URL=postgresql://user:password@host:5432/dbname
@@ -187,17 +187,17 @@ from src.clients import DatabaseClient
 
 db = DatabaseClient("postgresql://tester:testpass@localhost/api_tests")
 
-# Создать таблицы
+# Create tables
 db.create_tables()
 
-# Сохранить данные
+# Save data
 db.save_user({"name": "John", "email": "john@example.com"})
 
-# SQL запросы
+# SQL queries
 user = db.query_one("SELECT * FROM users WHERE id = :id", {"id": 1})
 users = db.query_all("SELECT * FROM users")
 
-# Очистка
+# Cleanup
 db.truncate_all()
 db.close()
 ```
@@ -211,134 +211,134 @@ from src.utils.db_assertions import (
     assert_field_equals,
 )
 
-# Проверить что строка существует
+# Check that the row exists
 assert_row_exists(db, "users", {"email": "john@example.com"})
 
-# Проверить количество строк
+# Check the row count
 assert_row_count(db, "users", 10)
 
-# Проверить значение поля
+# Check a field value
 assert_field_equals(db, "users", "id", 1, "name", "John Doe")
 ```
 
-## Запуск тестов
+## Running tests
 
-### Все тесты
+### All tests
 
 ```bash
 pytest
 ```
 
-### Smoke тесты (быстрые)
+### Smoke tests (fast)
 
 ```bash
 pytest -m smoke
 ```
 
-### По типу API
+### By API type
 
 ```bash
-# Только REST тесты
+# REST tests only
 pytest -m rest
 
-# Только GraphQL тесты
+# GraphQL tests only
 pytest -m graphql
 
-# Только gRPC тесты
+# gRPC tests only
 pytest -m grpc
 
-# Только Database тесты (требуется PostgreSQL)
+# Database tests only (requires PostgreSQL)
 pytest -m database
 
-# Только Kafka тесты (требуется Kafka)
+# Kafka tests only (requires Kafka)
 pytest -m kafka
 ```
 
-### Параллельный запуск
+### Parallel run
 
 ```bash
-# Автоопределение количества процессов
+# Auto-detect the number of workers
 pytest -n auto
 
-# Фиксированное количество
+# Fixed number of workers
 pytest -n 4
 ```
 
-### С Allure отчётом
+### With Allure report
 
 ```bash
-# Запуск с сохранением результатов
+# Run and save results
 pytest --alluredir=reports/allure-results
 
-# Открыть отчёт
+# Open the report
 allure serve reports/allure-results
 ```
 
-### Дополнительные опции
+### Additional options
 
 ```bash
-# Verbose с коротким traceback
+# Verbose with short traceback
 pytest -v --tb=short
 
-# Остановка на первой ошибке
+# Stop on first failure
 pytest -x
 
-# Перезапуск упавших тестов
+# Rerun failed tests
 pytest --reruns 3 --reruns-delay 1
 
-# Исключить медленные тесты
+# Exclude slow tests
 pytest -m "not slow"
 
-# Только негативные тесты
+# Negative tests only
 pytest -m negative
 ```
 
-## CI и отчёты
+## CI and reports
 
 ### GitHub Actions
 
-CI автоматически запускает тесты REST, GraphQL и gRPC при каждом push и pull request.
+CI automatically runs REST, GraphQL and gRPC tests on every push and pull request.
 
-**Статус CI:** [![CI](https://github.com/Obrams/api_test_python/actions/workflows/ci.yml/badge.svg)](https://github.com/Obrams/api_test_python/actions/workflows/ci.yml)
+**CI status:** [![CI](https://github.com/Obrams/api_test_python/actions/workflows/ci.yml/badge.svg)](https://github.com/Obrams/api_test_python/actions/workflows/ci.yml)
 
-### Allure отчёты
+### Allure reports
 
-- **Артефакты:** Allure результаты и отчёты доступны в [Actions artifacts](https://github.com/Obrams/api_test_python/actions) после каждого запуска CI
-- **GitHub Pages:** Статический Allure отчёт публикуется на [GitHub Pages](https://obrams.github.io/api_test_python/) (только для main/master ветки)
+- **Artifacts:** Allure results and reports are available in [Actions artifacts](https://github.com/Obrams/api_test_python/actions) after every CI run
+- **GitHub Pages:** a static Allure report is published to [GitHub Pages](https://obrams.github.io/api_test_python/) (main/master branch only)
 
-Для скачивания артефактов:
-1. Перейти в [Actions](https://github.com/Obrams/api_test_python/actions)
-2. Выбрать нужный workflow run
-3. Скачать артефакты `allure-results-*` или `allure-report-*`
-4. Для просмотра отчёта локально: `allure serve <путь-к-allure-results>`
+To download artifacts:
+1. Go to [Actions](https://github.com/Obrams/api_test_python/actions)
+2. Select the workflow run
+3. Download the artifacts `allure-results-*` or `allure-report-*`
+4. To view the report locally: `allure serve <path-to-allure-results>`
 
-## API для тестирования
+## APIs under test
 
 ### REST API
 
-| API | URL | Описание |
+| API | URL | Description |
 |-----|-----|----------|
 | JSONPlaceholder | https://jsonplaceholder.typicode.com | Fake REST API |
-| Reqres | https://reqres.in/api | REST с аутентификацией |
+| Reqres | https://reqres.in/api | REST with authentication |
 | HTTPBin | https://httpbin.org | Echo API |
-| DummyJSON | https://dummyjson.com | Реалистичные данные |
+| DummyJSON | https://dummyjson.com | Realistic data |
 
 ### GraphQL API
 
-| API | URL | Описание |
+| API | URL | Description |
 |-----|-----|----------|
-| Countries | https://countries.trevorblades.com/graphql | Страны, языки |
-| SpaceX | https://spacex-production.up.railway.app/ | Запуски SpaceX |
-| Rick and Morty | https://rickandmortyapi.com/graphql | Персонажи и эпизоды |
+| Countries | https://countries.trevorblades.com/graphql | Countries, languages |
+| SpaceX | https://spacex-production.up.railway.app/ | SpaceX launches |
+| Rick and Morty | https://rickandmortyapi.com/graphql | Characters and episodes |
 
 ### gRPC
 
-| Сервис | Описание |
+| Service | Description |
 |--------|----------|
 | grpcb.in | gRPC test server |
-| Local mock | Mock тесты |
+| Local mock | Mock tests |
 
-## Архитектура
+## Architecture
 
 ### REST Client
 
@@ -347,11 +347,11 @@ from src.clients import RestClient
 
 client = RestClient(base_url="https://api.example.com")
 
-# Синхронные вызовы
+# Synchronous calls
 response = client.get("/users")
 response = client.post("/users", json={"name": "John"})
 
-# Асинхронные вызовы
+# Asynchronous calls
 response = await client.aget("/users")
 ```
 
@@ -392,23 +392,23 @@ response = client.unary_call(
 from src.clients import KafkaClient, KafkaTestHelper
 from src.models.kafka import UserEventMessage
 
-# Создаём клиент
+# Create a client
 client = KafkaClient(bootstrap_servers="localhost:9092")
 
-# Отправляем сообщение
+# Send a message
 result = client.send("my_topic", {"key": "value"})
 
-# Отправляем Pydantic модель
+# Send a Pydantic model
 event = UserEventMessage(user_id=123, action="login")
 client.send("user_events", event)
 
-# Получаем сообщение
+# Receive a message
 message = client.consume_one(["my_topic"], group_id="my_group")
 
-# Batch операции
+# Batch operations
 messages = client.consume_batch(["my_topic"], max_messages=10)
 
-# Используем helper для тестов
+# Use the test helper
 helper = KafkaTestHelper(client)
 send_result, received = helper.send_and_receive("topic", {"data": "test"})
 
@@ -417,37 +417,37 @@ client.close()
 
 ## Design/Architecture
 
-Проект демонстрирует не только умение писать тесты, но и способность строить общий инфраструктурный слой для разных типов интеграций. Каждый клиент решает специфичные задачи своей области и предоставляет единообразный интерфейс для тестов.
+The project demonstrates not only writing tests but also building a shared infrastructure layer for different integration types. Each client solves the specific problems of its domain and exposes a uniform interface to the tests.
 
 ### RestClient
 
-**Sync/Async поддержка:** Единый класс с lazy initialization для синхронного (`httpx.Client`) и асинхронного (`httpx.AsyncClient`) клиентов. Методы `get/post/put/delete` для sync, `aget/apost/aput/adelete` для async. Оба клиента создаются только при первом обращении через `@property`.
+**Sync/async support:** a single class with lazy initialization of the synchronous (`httpx.Client`) and asynchronous (`httpx.AsyncClient`) clients. `get/post/put/delete` methods for sync, `aget/apost/aput/adelete` for async. Both clients are created only on first access via `@property`.
 
-**Retry механизм:** Все HTTP методы обёрнуты декоратором `@retry()` с экспоненциальной задержкой. Настраивается через `config.settings` (количество попыток, минимальная/максимальная задержка). Автоматически обрабатывает сетевые ошибки и временные сбои.
+**Retry mechanism:** all HTTP methods are wrapped with a `@retry()` decorator with exponential backoff. Configured via `config.settings` (number of attempts, min/max delay). Network errors and transient failures are handled automatically.
 
-**Хуки для логирования:** Структурированное логирование через `structlog` на уровне каждого запроса/ответа. Логируются endpoint, параметры, статус-коды. Поддержка Pydantic моделей через `_serialize()` — автоматическая конвертация в JSON.
+**Logging hooks:** structured logging via `structlog` for every request/response — endpoint, parameters and status codes. Pydantic models are supported via `_serialize()` with automatic JSON conversion.
 
 ### GraphQLClient
 
-**Работа со схемами/queries:** Поддержка загрузки схемы через `fetch_schema_from_transport`. Выполнение запросов из файлов через `execute_from_file()` для переиспользования `.graphql` файлов. Методы `query()` и `mutate()` как семантические обёртки над `execute()`. Поддержка subscriptions через WebSocket транспорт.
+**Schemas and queries:** schema loading via `fetch_schema_from_transport`. Queries can be executed from files via `execute_from_file()` to reuse `.graphql` files. `query()` and `mutate()` are semantic wrappers over `execute()`. Subscriptions are supported via WebSocket transport.
 
-**Стратегия обработки ошибок:** GraphQL специфична — ошибки могут быть в `errors` массиве при HTTP 200. Клиент логирует предупреждения, но не бросает исключения (в отличие от HTTP ошибок). Метод `raw_request()` для тестирования негативных сценариев — возвращает `httpx.Response` для проверки статус-кодов и тела ответа.
+**Error handling strategy:** GraphQL is special — errors can come in the `errors` array with HTTP 200. The client logs warnings but does not raise exceptions (unlike HTTP errors). `raw_request()` is used for negative scenarios — it returns `httpx.Response` so status codes and response bodies can be checked.
 
 ### GrpcClient
 
-**Единый helper вокруг stubs и методов:** Абстракция над низкоуровневыми gRPC stub'ами. Методы `unary_call()`, `server_streaming()`, `client_streaming()`, `bidirectional_streaming()` принимают `stub_class` и `method_name` как параметры — не нужно создавать stub'ы вручную. Lazy initialization канала через `@property channel` с поддержкой secure/insecure соединений.
+**A single helper around stubs and methods:** an abstraction over low-level gRPC stubs. `unary_call()`, `server_streaming()`, `client_streaming()` and `bidirectional_streaming()` take `stub_class` and `method_name` as parameters — no need to create stubs manually. Lazy channel initialization via `@property channel` with secure/insecure connection support.
 
-**Работа со streaming:** Все типы streaming (server, client, bidirectional) реализованы через генераторы. `server_streaming()` и `bidirectional_streaming()` возвращают `Iterator[Message]`, `client_streaming()` принимает `Iterator[Message]` как входной параметр. Единообразная обработка метаданных и таймаутов для всех типов вызовов.
+**Streaming:** all streaming types (server, client, bidirectional) are implemented with generators. `server_streaming()` and `bidirectional_streaming()` return `Iterator[Message]`, `client_streaming()` takes `Iterator[Message]` as input. Metadata and timeouts are handled uniformly for all call types.
 
 ### KafkaClient + KafkaTestHelper
 
-**Решение проблемы «дождаться сообщения»:** Метод `consume_until()` с предикатом — получает сообщения до тех пор, пока условие не выполнится или не истечёт таймаут. `KafkaTestHelper.wait_for_message()` — высокоуровневая обёртка для ожидания сообщения по ключу или значению поля. Избегает проблем с порядком сообщений и race conditions.
+**Solving "wait for a message":** `consume_until()` with a predicate consumes messages until the condition is met or the timeout expires. `KafkaTestHelper.wait_for_message()` is a high-level wrapper that waits for a message by key or field value. This avoids message-ordering issues and race conditions.
 
-**Стабильность тестов:** Каждый consumer создаётся с уникальным `group_id` (через фикстуры с UUID) — изоляция тестов друг от друга. `consume_one()` и `consume_batch()` создают временные consumer'ы и закрывают их автоматически — нет утечек соединений. `send_and_receive()` в helper'е — атомарная операция отправки и получения для E2E тестов. Поддержка `auto_offset_reset="earliest"` для чтения всех сообщений в топике.
+**Test stability:** every consumer gets a unique `group_id` (via UUID fixtures), isolating tests from each other. `consume_one()` and `consume_batch()` create temporary consumers and close them automatically — no connection leaks. `send_and_receive()` in the helper is an atomic send-and-receive operation for E2E tests. `auto_offset_reset="earliest"` is supported to read all messages in a topic.
 
-## Примеры тестов
+## Test examples
 
-### REST тест
+### REST test
 
 ```python
 import pytest
@@ -463,7 +463,7 @@ def test_get_users(rest_client):
     assert len(users) > 0
 ```
 
-### GraphQL тест
+### GraphQL test
 
 ```python
 @pytest.mark.graphql
@@ -481,7 +481,7 @@ def test_get_country(graphql_client):
     assert result["country"]["name"] == "United States"
 ```
 
-### gRPC тест
+### gRPC test
 
 ```python
 @pytest.mark.grpc
@@ -495,19 +495,19 @@ def test_unary_call(grpc_client):
     assert "World" in response.message
 ```
 
-### Database тест
+### Database test
 
 ```python
 @pytest.mark.database
 def test_create_user_verified_in_db(rest_client, db_client, random_user):
-    # 1. Создаём пользователя через API
+    # 1. Create a user via the API
     response = rest_client.post("/users", json=random_user.model_dump())
     assert response.status_code == 201
     
-    # 2. Сохраняем в БД
+    # 2. Save to the DB
     db_client.save_user(response.json())
     
-    # 3. Проверяем через SQL
+    # 3. Verify via SQL
     db_user = db_client.query_one(
         "SELECT * FROM users WHERE name = :name",
         {"name": random_user.name}
@@ -515,37 +515,37 @@ def test_create_user_verified_in_db(rest_client, db_client, random_user):
     assert db_user["email"] == random_user.email
 ```
 
-### Kafka тест
+### Kafka test
 
 ```python
 @pytest.mark.kafka
 def test_send_and_receive_message(kafka_client, kafka_helper, test_topic):
-    # Отправляем сообщение
+    # Send a message
     message = {"order_id": "12345", "status": "created"}
     result = kafka_client.send(test_topic, message)
     
     assert result.success is True
     assert result.offset >= 0
     
-    # Получаем сообщение
+    # Receive a message
     received = kafka_client.consume_one([test_topic], group_id="test_group")
     assert received is not None
     assert received.value_as_dict()["order_id"] == "12345"
 
 @pytest.mark.kafka
 def test_pydantic_message(kafka_client, test_topic, user_event_message):
-    # Отправляем Pydantic модель
+    # Send a Pydantic model
     result = kafka_client.send(test_topic, user_event_message)
     assert result.success
     
-    # Проверяем через helper
+    # Verify via the helper
     received = kafka_client.consume_one([test_topic], group_id="test_group")
     assert received.value_as_dict()["user_id"] == user_event_message.user_id
 ```
 
-## Количество тестов
+## Test count
 
-| Категория | Количество |
+| Category | Count |
 |-----------|------------|
 | REST CRUD | ~25 |
 | REST Auth | ~10 |
@@ -558,33 +558,33 @@ def test_pydantic_message(kafka_client, test_topic, user_event_message):
 | Kafka Producer | ~7 |
 | Kafka Consumer | ~7 |
 | Kafka Integration | ~6 |
-| **Итого** | **~135** |
+| **Total** | **~135** |
 
-## Технологии
+## Technologies
 
-- **httpx** — современный HTTP клиент
-- **gql** — GraphQL клиент
-- **grpcio** — gRPC для Python
+- **httpx** — modern HTTP client
+- **gql** — GraphQL client
+- **grpcio** — gRPC for Python
 - **kafka-python** — Kafka Producer/Consumer
-- **aiokafka** — асинхронный Kafka клиент
-- **sqlalchemy** — ORM для PostgreSQL
-- **pytest** — тестовый фреймворк
-- **pydantic** — валидация данных
-- **faker** — генерация тестовых данных
-- **allure** — отчётность
-- **structlog** — структурированное логирование
+- **aiokafka** — async Kafka client
+- **sqlalchemy** — ORM for PostgreSQL
+- **pytest** — test framework
+- **pydantic** — data validation
+- **faker** — test data generation
+- **allure** — reporting
+- **structlog** — structured logging
 
 ## Case study
 
-### Проблемы
+### Problems
 
-Какие типичные проблемы решает проект: разрозненные API‑тесты без единого клиента, отсутствие DB‑верификации, нет стабильного Kafka/gRPC тестирования, нет единого отчёта.
+Typical problems the project solves: scattered API tests without a shared client, no DB verification, no stable Kafka/gRPC testing, no single report.
 
-### Решения
+### Solutions
 
-Какие решения: единые клиенты для всех протоколов, Pydantic модели, SQLAlchemy + SQL assertions, Kafka helper, CI + Allure.
+Solutions: shared clients for all protocols, Pydantic models, SQLAlchemy + SQL assertions, Kafka helper, CI + Allure.
 
-## Лицензия
+## License
 
 MIT License
 
